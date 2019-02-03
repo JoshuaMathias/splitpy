@@ -1,5 +1,5 @@
 from scipy.sparse import vstack, hstack, csr_matrix, coo_matrix
-import easyinfo
+# from easyinfo.utils import # lprint, # vprint
 
 def add_file_suffix(filename, suf):
   name, ext = os.path.splitext(filename)
@@ -38,29 +38,29 @@ def multiply_job(matrix, **kwargs):
   try:
     print("multiply_job")
     second_matrix = kwargs['second']
-    lprint(matrix)
-    lprint(second_matrix)
+    # lprint(matrix)
+    # lprint(second_matrix)
     if isinstance(second_matrix, str):
       if 'num_splits_second' in kwargs and kwargs['num_splits_second'] and kwargs['num_splits_second'] > 1:
         return split_second(multiply_flip_job, matrix, **kwargs)
       else:
         with open(second_matrix, 'rb') as bin_file:
           second_matrix = pickle.load(bin_file)
-    # lprint(matrix)
-    # lprint(second_matrix)
+    # # lprint(matrix)
+    # # lprint(second_matrix)
     # if hasattr(matrix, 'dot'):
     #   prod = matrix.dot(second_matrix)
     # else:
     prod = matrix * second_matrix
     del second_matrix
-    # lprint(prod)
+    # # lprint(prod)
     return prod, kwargs
   except ValueError as e:
     eprint("ValueError in multiply_job")
     eprint(e)
-    lprint(matrix)
-    lprint(kwargs['second'], name='kwargs[second]')
-    lprint(second_matrix)
+    # lprint(matrix)
+    # lprint(kwargs['second'], name='kwargs[second]')
+    # lprint(second_matrix)
   return None
 
 # Multiplies first argument in kwargs by matrix
@@ -74,21 +74,21 @@ def multiply_flip_job(matrix, **kwargs):
       else:
         with open(second_matrix, 'rb') as bin_file:
           second_matrix = pickle.load(bin_file)
-    # lprint(matrix)
-    # lprint(second_matrix)
+    # # lprint(matrix)
+    # # lprint(second_matrix)
     # if hasattr(second_matrix, 'dot'):
     #   prod = second_matrix.dot(matrix)
     # else:
     prod = second_matrix * matrix
     del second_matrix
-    # lprint(prod)
+    # # lprint(prod)
     return prod, kwargs
   except ValueError as e:
     eprint("ValueError in multiply_job")
     eprint(e)
-    lprint(kwargs['second'], name='kwargs[second]')
-    lprint(second_matrix)
-    lprint(matrix)
+    # lprint(kwargs['second'], name='kwargs[second]')
+    # lprint(second_matrix)
+    # lprint(matrix)
   return None
 
 # Flip the first matrix (matrix) and second (kwargs['second'])
@@ -146,14 +146,14 @@ def offsets_from_filename(base_filename, num_splits):
               continue
             offsets.add(offset_num)
         except (TypeError, ValueError):
-          vprint(offset_splits, name='Could not convert to ints')
-          vprint(filename)
+          # vprint(offset_splits, name='Could not convert to ints')
+          # vprint(filename)
   
   offsets = sorted(list(offsets))
   try:
     matrix_len = offsets[-1]
   except IndexError:
-    vprint(base_filename, "Found no offsets with given base_filename")
+    # vprint(base_filename, "Found no offsets with given base_filename")
     return []
   offsets = calc_split_offsets(matrix_len, num_splits)
   return offsets
@@ -177,7 +177,7 @@ def load_rows(load_filename, num_splits, rows, save_transformed=False, save_file
           transformed_matrix = vstack([transformed_matrix, transformed_split])
       end("stacked transformed split from "+split_filename)
       del transformed_split
-  lprint(transformed_matrix)
+  # lprint(transformed_matrix)
   if not save_filename:
     save_filename = load_filename
   if save_transformed and save_filename:
@@ -205,7 +205,7 @@ def load_splits(load_filename, num_splits, save_transformed=False, save_filename
           transformed_matrix = vstack([transformed_matrix, transformed_split])
       end("stacked transformed split from "+split_filename)
       del transformed_split
-  lprint(transformed_matrix)
+  # lprint(transformed_matrix)
   if not save_filename:
     save_filename = load_filename
   if save_transformed and save_filename:
@@ -263,8 +263,8 @@ def split_second(pipeline, matrix, **kwargs):
 def split_matrix(pipeline, save_filename=False, num_splits=1, large_matrix=None, matrix_len=None, 
                            load_filename="", save_transformed=True, stack_transformed=False, axis=0, **kwargs):
 
-  vprint(pipeline)
-  vprint(kwargs, name='kwargs')
+  # vprint(pipeline)
+  # vprint(kwargs, name='kwargs')
   if 'second' in kwargs and not isinstance(kwargs['second'], str): # Not a file
     kwargs['second'] = csr_matrix(kwargs['second'])
 
@@ -279,7 +279,7 @@ def split_matrix(pipeline, save_filename=False, num_splits=1, large_matrix=None,
 
   if large_matrix is not None:
     large_matrix = csr_matrix(large_matrix)
-    lprint(large_matrix, name='large matrix')
+    # lprint(large_matrix, name='large matrix')
     if hasattr(large_matrix, 'shape'):
       matrix_len = large_matrix.shape
       if isinstance(matrix_len, (list, tuple)):
@@ -296,7 +296,7 @@ def split_matrix(pipeline, save_filename=False, num_splits=1, large_matrix=None,
       offsets = calc_split_offsets(matrix_len, num_splits)
     else:
       offsets = offsets_from_filename(load_filename, num_splits)
-  vprint(offsets)
+  # vprint(offsets)
     
   if not save_filename:
     save_filename = add_file_suffix(load_filename, 'transformed')
@@ -345,7 +345,7 @@ def split_matrix(pipeline, save_filename=False, num_splits=1, large_matrix=None,
           else:
             transformed_matrix = vstack([transformed_matrix, transformed_split])
         end("Ran pipeline and stacked result\n\t")
-        lprint(transformed_matrix)
+        # lprint(transformed_matrix)
       del transformed_split
     else: 
       transformed_matrix = transformed_split
@@ -374,7 +374,7 @@ def split_matrix(pipeline, save_filename=False, num_splits=1, large_matrix=None,
             transformed_matrix = vstack([transformed_matrix, transformed_split])
         end("stacked transformed split from "+split_filename)
         del transformed_split
-    lprint(transformed_matrix)
+    # lprint(transformed_matrix)
     if save_transformed and save_filename:
       with open(save_filename, 'wb') as bin_file:
         pickle.dump(transformed_matrix, bin_file)
